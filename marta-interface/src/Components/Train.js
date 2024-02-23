@@ -31,7 +31,7 @@ export default function Train(data) {
                         {line}
                     </div>
                     <div className='flex px-4' style={{ color: sColor }}>
-                        {data.data.DELAY === "TOS" ? 'On Time' : 'Delayed'}
+                        {data.data.DELAY === "T0S" ? 'On Time' : 'Delayed'}
                     </div>
                 </div>
             </div>
