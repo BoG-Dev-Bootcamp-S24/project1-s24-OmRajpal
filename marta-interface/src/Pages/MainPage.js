@@ -1,35 +1,24 @@
 import React from 'react';
-import { Link, Route, Router, Routes } from 'react-router-dom';
-
-// Import your LinesPage component
-import LinesPage from './LinesPage';
+import { Link } from 'react-router-dom';
 
 export default function MainPage() {
-
   const allColors = ['gold', 'blue', 'red', 'green'];
 
   return (
-    <div className='flex flex-col'>
-      <div className="flex flex-row justify-evenly border-grey border-t py-3">
+    <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-screen flex flex-col justify-center items-center">
+      <h1 className="text-4xl font-bold text-white mb-8">MARTA Train Tracker</h1>
+      <div className="flex space-x-4">
         {allColors.map((color) => (
           <Link
             key={color}
             to={`/${color}`}
-            className={`flex flex-row border px-10 py-1 border-black`}
-            style={{ backgroundColor: color, color: 'white'}}
+            className={`flex items-center justify-center border px-8 py-2 border-white rounded-md`}
+            style={{ backgroundColor: color, color: 'white', minWidth: '100px' }}
           >
-            {color}
+            {color.charAt(0).toUpperCase() + color.slice(1)}
           </Link>
         ))}
       </div>
-
-      {/* The Routes component should be outside the div that contains the Links */}
-      <Routes>
-        <Route path="/red" element={<LinesPage color="red" />} />
-        <Route path="/green" element={<LinesPage color="green" />} />
-        <Route path="/blue" element={<LinesPage color="blue" />} />
-        <Route path="/gold" element={<LinesPage color="gold" />} />
-      </Routes>
     </div>
   );
 }

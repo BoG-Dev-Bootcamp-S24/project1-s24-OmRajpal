@@ -4,7 +4,7 @@ import TrainList from '../Components/TrainList';
 
 export default function LinesPage(color) {
     const validatedColor = String(color);
-    let [currColor, setCurrColor] = useState(validatedColor);
+    let [currColor, setCurrColor] = useState('gold');
     let [currStations, setCurrStations] = useState([]);
     let [trainData, setTrainData] = useState([]);
     let [availableStations, setAvailableStations] = useState([]);
@@ -20,17 +20,23 @@ export default function LinesPage(color) {
     const stationsURL = 'https://midsem-bootcamp-api.onrender.com/stations/' + currColor;
   
     useEffect(() => {
+        console.log(validatedColor);
+        setCurrColor(validatedColor);
+        console.log(currColor);
+    }, [validatedColor]);
+
+    useEffect(() => {
       const fetchData = async () => {
           setLoading(true);
           try {
               const response = await fetch(URL);
               const data = await response.json();
               setTrainData(data);
-              if (trainData[0].DIRECTION === 'S' || trainData[0].DIRECTION === 'N') {
-                setDirections(['Northbound', 'Southbound'])
-              } else {
-                setDirections(['Eastbound', 'Westbound'])
-              }
+            //   if (trainData[0].DIRECTION === 'S' || trainData[0].DIRECTION === 'N') {
+            //     setDirections(['Northbound', 'Southbound'])
+            //   } else {
+            //     setDirections(['Eastbound', 'Westbound'])
+            //   }
 
               const response2 = await fetch(stationsURL);
               const dataStations = await response2.json();
@@ -92,6 +98,57 @@ const handleColorsToggle = (color) => {
     }
 };
 
+const getFilterButtons = () => {
+    const defaultFilters = ['Arriving', 'Scheduled'];
+
+    // Add line-specific filters
+    const lineSpecificFilters = (currColor === 'green' || currColor === 'blue') ? ['Eastbound', 'Westbound'] : ['Northbound', 'Southbound'];
+
+    const allFilters = [...defaultFilters, ...lineSpecificFilters];
+
+    const filterButtons = allFilters.map(filter => (
+        <button
+            key={filter}
+            onClick={() => handleConditionsToggle(filter)}
+            className={`flex flex-row rounded-md border px-3 py-1 border-black ${conditions.includes(filter) ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+        >
+            {filter}
+        </button>
+    ));
+
+    return filterButtons;
+};
+
+useEffect(() => {
+    setLoading(true);
+
+    const filteredData = trainData.filter((train) => {
+        const formattedTrainStation = train.STATION.toLowerCase();
+        const arriving = train.WAITING_TIME === 'Arriving';
+        const scheduled = !arriving; 
+        const northbound = train.DIRECTION === 'N';
+        const southbound = train.DIRECTION === 'S';
+        const eastbound = train.DIRECTION === 'E'; 
+        const westbound = train.DIRECTION === 'W'; 
+
+        return (
+            formattedTrainStation &&
+            currStations.some(station => formattedTrainStation.includes(station.toLowerCase())) &&
+            (
+                (arriving && conditions.includes('Arriving')) ||
+                (scheduled && conditions.includes('Scheduled')) ||
+                (northbound && conditions.includes('Northbound')) ||
+                (southbound && conditions.includes('Southbound')) ||
+                (eastbound && conditions.includes('Eastbound')) || 
+                (westbound && conditions.includes('Westbound'))    
+            )
+        );
+    });
+
+    setFilteredTrainData(filteredData);
+    setLoading(false);
+}, [currStations, conditions, trainData]);
+
     return (
         <div className='flex flex-col'>
             <div className="flex flex-row justify-evenly border-grey border-t py-3">
@@ -133,15 +190,7 @@ const handleColorsToggle = (color) => {
             <div className="flex flex-col w-4/5">
                 {console.log(filteredTrainData)}
                 <div className="flex flex-row justify-evenly border-grey border-t py-3">
-                    {allConditions.map((condition) => (
-                    <button
-                        key={condition}
-                        onClick={() => handleConditionsToggle(condition)}
-                        className={`flex flex-row rounded-md border px-3 py-1 border-black ${conditions.includes(condition) ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
-                    >
-                        {condition}
-                    </button>
-                ))}
+                    {getFilterButtons()}
                 </div>
                 {filteredTrainData != null ? (<TrainList data={filteredTrainData} />) : 'Please select a station'}
             </div>
