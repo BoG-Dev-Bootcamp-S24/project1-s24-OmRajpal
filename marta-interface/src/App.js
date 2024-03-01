@@ -1,15 +1,13 @@
-import logo from './logo.svg';
 import './App.css';
-import LinesPage from './Pages/LinesPage';
+import MainPage from './Pages/MainPage';
 
 function App() {
   return (
     <div className="App">
-      <body>
-        <LinesPage />
-      </body>
+      <MainPage />
     </div>
   );
 }
 
 export default App;
+

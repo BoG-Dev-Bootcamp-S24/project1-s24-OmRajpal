@@ -1,8 +1,8 @@
 import Train from "./Train";
 
-export default function TrainList({ currColor, data}) {
+export default function TrainList({data}) {
     let trainArray = data.map((data) => (
-        <Train currColor={currColor} data={data} />
+        <Train data={data} />
     ));
     console.log(trainArray);
 
